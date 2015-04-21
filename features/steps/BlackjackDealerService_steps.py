@@ -4,6 +4,11 @@ from behave import *
 import json
 import requests, requests_mock
 import time
+import BlackjackDealerService
+from Player import Player
+from Dealer import Dealer
+from Card import Card
+from mock import patch
 
 globalData = {}
 
@@ -69,3 +74,29 @@ def step_impl(context):
     jsonData = json.loads(context.page.data)
     for player in jsonData:
         assert jsonData[player]['status'] != 'active'
+
+# @given('the deck is full of kings')
+# def step_impl(context):
+#     @patch.object(Card,'getRandomCard')
+#     def test_dealer_bust(self,mock_bust):
+#         mock_bust.return_value = Card(12) # return a King
+#
+@given('a player service URL "{url}" is connected')
+def step_impl(context,url):
+    playerURL = url
+    context.player = Player()
+    BlackjackDealerService.addPlayer(playerURL, context.player)
+    context.player.dealer = Dealer(playerURL, BlackjackDealerService.q)
+    context.dealer = context.player.dealer
+
+@given('the player has a king and a 5')
+def step_impl(context):
+    context.dealer.playersHand = [Card(4),Card(12)]
+    context.dealer.dealersHand = [Card(12),Card(12)]
+
+@then('the player will go bust if the deck is full of kings')
+def step_impl(context):
+    context.dealer.playHand()
+    context.page = context.client.get('/players')  # do a GET /players to force BlackjackDealerService to drain the queue and update player obj
+    assert context.page.status_code == 200
+    assert context.player.stats['lose'] == 1

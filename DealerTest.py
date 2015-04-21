@@ -50,5 +50,56 @@ class DealerTests(unittest.TestCase):
         result = dealer.dealerDraw()
         self.assertEqual(result,17)
 
+    def test_hand_is_busted(self):
+        hand = [Card(12),Card(12),Card(12)] # 3 kings
+        dealer = Dealer(None,None)
+        result = dealer.getMaxHandValue(hand)
+        self.assertEqual(result,0)
+
+    def test_player_is_busted(self):
+        dealer = Dealer(None,None)
+        hand = [Card(12),Card(12),Card(12)] # 3 kings
+        dealer.playersHand = hand
+        self.assertEqual(dealer.getHandResult(),'lose')
+
+    def test_dealer_is_busted(self):
+        dealer = Dealer(None,None)
+        hand = [Card(12),Card(12)] # 2 kings
+        dealer.playersHand = hand
+        hand = [Card(12),Card(12),Card(12)] # 3 kings
+        dealer.dealersHand = hand
+        self.assertEqual(dealer.getHandResult(),'win')
+
+    def test_tie(self):
+        dealer = Dealer(None,None)
+        hand = [Card(12),Card(12)] # 2 kings
+        dealer.playersHand = hand
+        dealer.dealersHand = hand
+        self.assertEqual(dealer.getHandResult(),'tie')
+
+    def test_player_wins(self):
+        dealer = Dealer(None,None)
+        hand = [Card(12),Card(12)] # 2 kings
+        dealer.playersHand = hand
+        hand = [Card(12),Card(3)] # 1 king, 4
+        dealer.dealersHand = hand
+        self.assertEqual(dealer.getHandResult(),'win')
+
+    def test_player_loses(self):
+        dealer = Dealer(None,None)
+        hand = [Card(12),Card(3)] # 1 king, 4
+        dealer.playersHand = hand
+        hand = [Card(12),Card(12)] # 2 kings
+        dealer.dealersHand = hand
+        self.assertEqual(dealer.getHandResult(),'lose')
+
+    def test_player_wins_with_blackjack(self):
+        dealer = Dealer(None,None)
+        hand = [Card(12),Card(0)] # 1 king, one ace
+        dealer.playersHand = hand
+        hand = [Card(12),Card(3)] # 1 king, 4
+        dealer.dealersHand = hand
+        self.assertEqual(dealer.getHandResult(),'win')
+
 if __name__ == '__main__':
     unittest.main()

@@ -17,3 +17,9 @@ Feature: Test the Blackjack Dealer Service
         then the player service URL "http://localhost:5001/stand" is active on GET /players
         then remove the player service URL "http://localhost:5001/stand"
         then there are no active players
+
+      Scenario: play a hand where player goes bust
+        Given a player service URL "http://localhost:5001/hit" is connected
+        and the player has a king and a 5
+        then the player will go bust if the deck is full of kings
+

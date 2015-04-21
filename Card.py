@@ -74,6 +74,11 @@ class Card:
     def getValue(self):
         return self.deck[self.cardNumber]['value']
 
+    def getIndex(self):
+        for i in range(0,len(deck)):
+            if self.getSuit() == deck[i]['suit'] and self.getRank() == deck[i]['rank']:
+                return i
+
     @classmethod
     def getRandomCard(self):
         return Card(randint(0, 51))
