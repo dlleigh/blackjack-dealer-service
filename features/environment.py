@@ -14,7 +14,7 @@ def setup_debug_on_error(userdata):
 def before_all(context):
     setup_debug_on_error(context.config.userdata)
     import ipdb
-    ipdb.set_trace()
+    #ipdb.set_trace()
 
 def after_scenario(context, scenario):
     context.page = context.client.get('/deleteAll')

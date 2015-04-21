@@ -35,7 +35,16 @@ class DealerTests(unittest.TestCase):
     @patch.object(Card,'getRandomCard')
     def test_dealer_bust(self,mock_bust):
         mock_bust.return_value = Card(12) # return a King
-        hand = [Card(0),Card(1),Card(2),Card(13)]
+        hand = [Card(1),Card(2),Card(13)]
+        dealer = Dealer(None,None)
+        dealer.dealersHand = hand
+        result = dealer.dealerDraw()
+        self.assertEqual(result,0)
+
+    @patch.object(Card,'getRandomCard')
+    def test_dealer_not_bust(self,mock_bust):
+        mock_bust.return_value = Card(1) # return a 2
+        hand = [Card(0),Card(1)]
         dealer = Dealer(None,None)
         dealer.dealersHand = hand
         result = dealer.dealerDraw()

@@ -17,12 +17,8 @@ class Dealer(threading.Thread):
 
     def run(self):
         while not self.cancelled:
-            print "looping"
-            r = requests.post(self.playerURL, data=json.dumps({'playersHand': [1, 2], 'dealersHand': [1]}),
-                              headers={'content_type': 'application/json'})
-            action = r.json()['action']
-            if action == 'stand':
-                self.q.put({'playerURL': self.playerURL, 'result': 'tie'})
+            self.playerDraw()
+            self.q.put({'playerURL': self.playerURL, 'result': 'tie'})
             time.sleep(1)
 
     def getHandValues(self,hand):
@@ -49,10 +45,32 @@ class Dealer(threading.Thread):
                     maxValue = value
         return maxValue
 
+    def getMinHandValue(self,hand):
+        values = self.getHandValues(hand)
+        minValue = values[0]
+        for value in values:
+            if value < minValue:
+                minValue = value
+        return minValue
+
     def dealerDraw(self):
         while self.getMaxHandValue(self.dealersHand) <= 16 and self.getMinHandValue(self.dealersHand) <= 21:
            self.dealersHand.append(Card.getRandomCard())
         return self.getMaxHandValue(self.dealersHand)
+
+    def playerDraw(self):
+        playerStand = False
+        while self.getMaxHandValue(self.playersHand) <= 16 and \
+            self.getMinHandValue(self.playersHand) <= 21 and \
+            playerStand is False:
+            r = requests.post(self.playerURL,
+                              data=json.dumps({'playersHand': self.playersHand, 'dealersHand': self.dealersHand}),
+                              headers={'content_type': 'application/json'})
+            action = r.json()['action']
+            if action == 'hit':
+                self.playersHand.append(Card.getRandomCard())
+            else:
+                playerStand = True
 
     def cancel(self):
         """End this timer thread"""
