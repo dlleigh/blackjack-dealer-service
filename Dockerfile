@@ -13,12 +13,7 @@ RUN apt-get -qq update && \
         wget
 
 #Python
-RUN pip install behave
-RUN pip install coverage
-RUN pip install flask
-RUN pip install requests
-RUN pip install mock
-RUN pip install ipdb
+RUN pip install behave coverage flask requests mock ipdb
 
 # Set work dir
 

@@ -11,7 +11,7 @@ test-bdd:
 	@behave
 
 dockerbuild:
-	@docker build --no-cache=true -t $(IMAGE_NAME):$(TAG) .
+	@docker build -t $(IMAGE_NAME):$(TAG) .
 
 dockerpush:
 	@docker tag -f $(IMAGE_NAME):$(TAG) $(REPO_URL)/$(IMAGE_NAME):$(TAG)
