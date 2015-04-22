@@ -43,3 +43,8 @@ Feature: Test the Blackjack Dealer Service
         then remove the player service URL "http://localhost:5001/broken/one"
         then the player "http://localhost:5001/broken/one" should have lost some hands
 
+      Scenario: cheat service
+        Given a player service URL "http://localhost:5001/hit/one" is connected
+        and the player has a king and a 5
+        and the dealer cheat url is called for player "http://localhost:5001/hit/one"
+        then the next card will match what is expected

@@ -11,13 +11,6 @@ from mock import patch
 
 globalData = {}
 
-def _always_stand_callback(request, context):
-    context.status_code = 200
-    data = json.loads(request.text)
-    globalData['playersHand'] = data['playersHand']
-    globalData['dealersHand'] = data['dealersHand']
-    return {'action': 'stand'}
-
 @given('get the page')
 def step_impl(context):
     context.page = context.client.get('/')
@@ -76,12 +69,6 @@ def step_impl(context):
     for player in jsonData:
         assert jsonData[player]['status'] != 'active'
 
-# @given('the deck is full of kings')
-# def step_impl(context):
-#     @patch.object(Card,'getRandomCard')
-#     def test_dealer_bust(self,mock_bust):
-#         mock_bust.return_value = Card(12) # return a King
-#
 @given('a player service URL "{url}" is connected')
 def step_impl(context,url):
     playerURL = url
@@ -138,3 +125,21 @@ def step_impl(context,url):
     assert jsonData[url]['lose'] > 0
     assert jsonData[url]['win'] == 0
     assert jsonData[url]['tie'] == 0
+
+@given('the dealer cheat url is called for player "{url}"')
+def step_impl(context,url):
+    context.page = context.client.get('/getPlayersNextCard', data=json.dumps({'playerURL':url}), content_type='application/json')
+    assert context.page.status_code == 200
+    jsonData = json.loads(context.page.data)
+    context.nextCardIndex = jsonData['cardIndex']
+
+@then('the next card will match what is expected')
+def step_impl(context):
+     context.dealer.playHand()
+     for card in context.dealer.playersHand:
+         assert card.getIndex() in [4,12,context.nextCardIndex]
+
+@given('the player has a 2 and a 5')
+def step_impl(context):
+    context.dealer.playersHand = [Card(3),Card(4)]
+    context.dealer.dealersHand = [Card(12),Card(12)]

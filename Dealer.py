@@ -14,12 +14,13 @@ class Dealer(threading.Thread):
         self.playerURL = playerURL
         self.playersHand = []
         self.dealersHand = []
+        self.nextCard = Card.getRandomCard()
         self.q = q
 
     def run(self):
         while not self.cancelled:
-            self.playersHand = [Card.getRandomCard(),Card.getRandomCard()]
-            self.dealersHand = [Card.getRandomCard()]
+            self.playersHand = [self.dealCard(),self.dealCard()]
+            self.dealersHand = [self.dealCard()]
             self.playHand()
             time.sleep(1)
 
@@ -75,8 +76,16 @@ class Dealer(threading.Thread):
 
     def dealerDraw(self):
         while self.getMaxHandValue(self.dealersHand) <= 16 and self.getMinHandValue(self.dealersHand) <= 21:
-           self.dealersHand.append(Card.getRandomCard())
+           self.dealersHand.append(self.dealCard())
         return self.getMaxHandValue(self.dealersHand)
+
+    def getNextCardCheat(self):
+        return self.nextCard
+
+    def dealCard(self):
+        thisCard = self.nextCard
+        self.nextCard = Card.getRandomCard()
+        return thisCard
 
     def playerDraw(self):
         playerStand = False
@@ -94,7 +103,7 @@ class Dealer(threading.Thread):
                 action = r.json()['action']
                 if action == 'hit':
                     print ("player hits")
-                    self.playersHand.append(Card.getRandomCard())
+                    self.playersHand.append(self.dealCard())
                 else:
                     print ("player stands")
                     playerStand = True

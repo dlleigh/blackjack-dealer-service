@@ -101,5 +101,11 @@ class DealerTests(unittest.TestCase):
         dealer.dealersHand = hand
         self.assertEqual(dealer.getHandResult(),'win')
 
+    def test_get_next_card(self):
+        dealer = Dealer(None,None)
+        predictedCard = dealer.getNextCardCheat()
+        nextCard = dealer.dealCard()
+        self.assertEqual(predictedCard.getIndex(),nextCard.getIndex())
+
 if __name__ == '__main__':
     unittest.main()

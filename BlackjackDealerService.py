@@ -4,6 +4,7 @@ from flask import Flask, request
 from Queue import Queue
 from Dealer import Dealer
 from Player import Player
+from Card import Card
 import json, time
 
 BlackjackDealerService = Flask(__name__)
@@ -55,6 +56,14 @@ def deleteAll():
         players[playerURL].status = 'stopped'
         players[playerURL].dealer.cancel()
     return "ok"
+
+@BlackjackDealerService.route("/getPlayersNextCard", methods=['GET'])
+def cheat():
+    jsonData = request.json
+    playerURL = jsonData['playerURL']
+    nextCard = players[playerURL].dealer.getNextCardCheat()
+    result = {"cardIndex": nextCard.getIndex()}
+    return json.dumps(result)
 
 if __name__ == "__main__":
     BlackjackDealerService.run(debug=True)
