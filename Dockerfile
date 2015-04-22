@@ -28,4 +28,4 @@ WORKDIR /opt/blackjack-dealer-service
 
 EXPOSE 5000
 
-CMD    [python BlackjackService.py]
+CMD    ["/usr/bin/python", "BlackjackDealerService.py"]
