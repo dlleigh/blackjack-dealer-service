@@ -38,6 +38,12 @@ def step_impl(context,url):
     #     context.page = context.client.post('/players', data=json.dumps(data), content_type='application/json')
     assert context.page.status_code == 200
 
+@then('another player service URL "{url}" provided via POST to /players will be rejected')
+def step_impl(context,url):
+    data = {'playerURL': url}
+    context.page = context.client.post('/players', data=json.dumps(data), content_type='application/json')
+    assert context.page.status_code == 409
+
 @then('the player service URL "{url}" is active on GET /players')
 def step_impl(context,url):
     context.page = context.client.get('/players')
@@ -94,9 +100,37 @@ def step_impl(context):
     context.dealer.playersHand = [Card(4),Card(12)]
     context.dealer.dealersHand = [Card(12),Card(12)]
 
-@then('the player will go bust if the deck is full of kings')
+@then('the player will go bust')
 def step_impl(context):
     context.dealer.playHand()
     context.page = context.client.get('/players')  # do a GET /players to force BlackjackDealerService to drain the queue and update player obj
     assert context.page.status_code == 200
     assert context.player.stats['lose'] == 1
+
+@given('"{count}" player services with URL like "{url}"')
+def step_impl(context,count,url):
+    for i in range(1,int(count)):
+        data = {'playerURL': url + '/' + str(i)}
+        context.page = context.client.post('/players', data=json.dumps(data), content_type='application/json')
+        assert context.page.status_code == 200
+
+@then('there will be "{count}" players connected')
+def step_impl(context,count):
+    context.page = context.client.get('/players')
+    assert context.page.status_code == 200
+    jsonData = json.loads(context.page.data)
+    context.playersData = jsonData
+    i = 0
+    for key, value in jsonData.iteritems():
+        i+=1
+    assert i == 20
+
+@then('all players will have hands scored')
+def step_impl(context):
+    for key, value in context.playersData.iteritems():
+        assert value['win'] + value['lose'] + value['tie'] != 0
+
+@then('remove all players')
+def step_impl(context):
+    context.page = context.client.get('/deleteAll')
+    assert context.page.status_code == 200

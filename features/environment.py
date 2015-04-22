@@ -20,7 +20,7 @@ def before_all(context):
 
 def after_all(context):
     # context.mockProcess.terminate()
-    Popen("for i in $(ps -ef | grep MockPlayerService | awk '{print $2}'); do kill $i ; done ",shell=True)
+    Popen("for i in $(ps -ef | grep MockPlayerService | grep -v grep | awk '{print $2}'); do kill $i ; done ",shell=True)
 
 def after_scenario(context, scenario):
     context.page = context.client.get('/deleteAll')

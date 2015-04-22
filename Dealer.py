@@ -79,7 +79,7 @@ class Dealer(threading.Thread):
 
     def playerDraw(self):
         playerStand = False
-        while self.getMinHandValue(self.playersHand) < 21 and playerStand is False:
+        while self.getMinHandValue(self.playersHand) <= 21 and playerStand is False:
             print ("player hand value is %s" % self.getMaxHandValue(self.playersHand))
             handData = {'playersHand': [c.getIndex() for c in self.playersHand],
                         'dealersHand': [c.getIndex() for c in self.dealersHand]}

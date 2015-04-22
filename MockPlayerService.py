@@ -15,15 +15,15 @@ def hello():
     result = "Hello World!"
     return result
 
-@MockPlayerService.route("/stand", methods=['POST','GET'])
-def stand():
+@MockPlayerService.route("/stand/<username>", methods=['POST','GET'])
+def stand(username):
     for cardIndex in request.json['playersHand']:
         print("card received: %s of %s" % (Card(cardIndex).getRank(),Card(cardIndex).getSuit()))
     jsonData = {"action": "stand"}
     return json.dumps(jsonData)
 
-@MockPlayerService.route("/hit", methods=['POST','GET'])
-def hit():
+@MockPlayerService.route("/hit/<username>", methods=['POST','GET'])
+def hit(username):
     for cardIndex in request.json['playersHand']:
         print("card received: %s of %s" % (Card(cardIndex).getRank(),Card(cardIndex).getSuit()))
     # for card in request.json:

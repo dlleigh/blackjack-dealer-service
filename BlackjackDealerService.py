@@ -21,6 +21,9 @@ def playersRequest():
     if request.method == 'POST':
         jsonData = request.json
         playerURL = jsonData['playerURL']
+        if players.has_key(playerURL):
+            if players[playerURL].getStatus() == 'active':
+                return "error: player %s already exists and is active" % playerURL, 409
         addPlayer(playerURL, Player())
         dealer = Dealer(playerURL, q)
         players[playerURL].set_dealer(dealer)
@@ -42,7 +45,6 @@ def playersRequest():
         players[playerURL].status = 'stopped'
         players[playerURL].dealer.cancel()
         return "ok"
-
 
 def addPlayer(playerURL, player):
     players[playerURL] = player

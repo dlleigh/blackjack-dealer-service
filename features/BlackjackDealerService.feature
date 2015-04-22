@@ -5,21 +5,34 @@ Feature: Test the Blackjack Dealer Service
         then service will return hello
 
     Scenario: add a player service
-      Given a player service URL "http://localhost:5001/stand" is provided via POST to /players
+      Given a player service URL "http://localhost:5001/stand/one" is provided via POST to /players
         and wait "5" seconds
-        then the player service URL "http://localhost:5001/stand" is active on GET /players
-        #and player service is called with 2 player cards and 1 dealer card
-        and dealer will finish and score the hand for player "http://localhost:5001/stand"
+        then the player service URL "http://localhost:5001/stand/one" is active on GET /players
+        and dealer will finish and score the hand for player "http://localhost:5001/stand/one"
 
       Scenario: add and remove a player service
-      Given a player service URL "http://localhost:5001/stand" is provided via POST to /players
+      Given a player service URL "http://localhost:5001/stand/one" is provided via POST to /players
         and wait "2" seconds
-        then the player service URL "http://localhost:5001/stand" is active on GET /players
-        then remove the player service URL "http://localhost:5001/stand"
+        then the player service URL "http://localhost:5001/stand/one" is active on GET /players
+        then remove the player service URL "http://localhost:5001/stand/one"
+        then there are no active players
+
+      Scenario: attempt to add the same player service twice
+      Given a player service URL "http://localhost:5001/stand/one" is provided via POST to /players
+        then another player service URL "http://localhost:5001/stand/one" provided via POST to /players will be rejected
+        then remove the player service URL "http://localhost:5001/stand/one"
         then there are no active players
 
       Scenario: play a hand where player goes bust
-        Given a player service URL "http://localhost:5001/hit" is connected
+        Given a player service URL "http://localhost:5001/hit/one" is connected
         and the player has a king and a 5
-        then the player will go bust if the deck is full of kings
+        then the player will go bust
 
+      Scenario: start many player services
+        Given "10" player services with URL like "http://localhost:5001/hit"
+        and "10" player services with URL like "http://localhost:5001/stand"
+        and wait "5" seconds
+        then remove all players
+        then there will be "20" players connected
+        and all players will have hands scored
+        then there are no active players
