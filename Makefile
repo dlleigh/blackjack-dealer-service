@@ -1,3 +1,7 @@
+IMAGE_NAME=devcamp/blackjack-dealer-service
+REPO_URL=registry.swg-devops.com
+TAG=localtest
+
 test: test-tdd test-bdd
 
 test-tdd:
@@ -6,5 +10,11 @@ test-tdd:
 test-bdd:
 	@behave
 
+dockerbuild:
+	@docker build --no-cache=true -t $(IMAGE_NAME):$(TAG) .
+
+dockerpush:
+	@docker tag -f $(IMAGE_NAME):$(TAG) $(REPO_URL)/$(IMAGE_NAME):$(TAG)
+	@docker push $(REPO_URL)/$(IMAGE_NAME):$(TAG)
 
 .PHONY:  test test-tdd test-bdd
