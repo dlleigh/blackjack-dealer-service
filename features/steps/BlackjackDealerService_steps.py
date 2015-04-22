@@ -2,7 +2,6 @@ __author__ = 'dleigh'
 
 from behave import *
 import json
-import requests, requests_mock
 import time
 import BlackjackDealerService
 from Player import Player
@@ -11,7 +10,6 @@ from Card import Card
 from mock import patch
 
 globalData = {}
-
 
 def _always_stand_callback(request, context):
     context.status_code = 200
@@ -33,9 +31,6 @@ def step_impl(context):
 def step_impl(context,url):
     data = {'playerURL': url}
     context.page = context.client.post('/players', data=json.dumps(data), content_type='application/json')
-    # with requests_mock.mock() as m:
-    #     m.post(url, json=_always_stand_callback)
-    #     context.page = context.client.post('/players', data=json.dumps(data), content_type='application/json')
     assert context.page.status_code == 200
 
 @then('another player service URL "{url}" provided via POST to /players will be rejected')
