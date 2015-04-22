@@ -12,7 +12,7 @@ def before_all(context):
     context.config.setup_logging()
     setup_debug_on_error(context.config.userdata)
     import ipdb
-    #ipdb.set_trace()
+    # ipdb.set_trace()
     # run mock player service
     context.mockProcess = Popen('/usr/bin/python MockPlayerService.py',shell=True)
     print("MockProcess pid: %s" % context.mockProcess.pid)

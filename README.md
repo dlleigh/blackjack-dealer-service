@@ -1,17 +1,46 @@
-This README.md file is displayed on your project page. You should edit this 
-file to describe your project, including instructions for building and 
-running the project, pointers to the license under which you are making the 
-project available, and anything else you think would be useful for others to
-know.
+## Get Started
 
-We have created an empty license.txt file for you. Well, actually, it says,
-"<Replace this text with the license you've chosen for your project.>" We 
-recommend you edit this and include text for license terms under which you're
-making your code available. A good resource for open source licenses is the 
-[Open Source Initiative](http://opensource.org/).
+#### Install dependencies
+```
+virtualenv .
+source bin/activate
+pip install -r requirements.txt
+```
 
-Be sure to update your project's profile with a short description and 
-eye-catching graphic.
+#### Environment Dependencies
+```
+$ export ETCD_ENDPOINT=...
+$ export DEALER_UUID=...
+$ export DEALER_ENDPOINT=...
+```
 
-Finally, consider defining some sprints and work items in Track & Plan to give 
-interested developers a sense of your cadence and upcoming enhancements.
+#### Run it
+```
+$ python BlackJackDealerService.py
+```
+
+## Tests
+
+#### Environment Dependencies (in additon to runtime deps above)
+```
+$ export DOCKER_HOST=...
+$ export ETCD_ENDPOINT=192.168.59.103:2379
+$ export ETCD_NAME=etcd-0
+$ export ETCD_PORT=2379
+```
+
+#### All
+```
+make tests
+```
+
+#### Unit
+```
+make tests-unit
+```
+
+#### Integration
+**NOTE**: integration `make` steps depend on `docker` cli to manage containers of various service dependencies (i.e. `etcd`)
+```
+make tests-integration
+```

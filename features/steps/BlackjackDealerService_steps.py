@@ -1,13 +1,16 @@
 __author__ = 'dleigh'
 
 from behave import *
-import json
+import json, os, etcd
+import requests, requests_mock
 import time
 import BlackjackDealerService
+import MockPlayerService
 from Player import Player
 from Dealer import Dealer
 from Card import Card
 from mock import patch
+from DealerRunner import DealerRunner
 
 globalData = {}
 
@@ -73,8 +76,10 @@ def step_impl(context):
 def step_impl(context,url):
     playerURL = url
     context.player = Player()
-    BlackjackDealerService.addPlayer(playerURL, context.player)
-    context.player.dealer = Dealer(playerURL, BlackjackDealerService.q)
+    runner = DealerRunner()
+    runner.addPlayer(playerURL, context.player)
+    context.runner = runner
+    context.player.dealer = runner.newDealer(playerURL)
     context.dealer = context.player.dealer
 
 @given('the player has a king and a 5')
@@ -85,13 +90,12 @@ def step_impl(context):
 @then('the player will go bust')
 def step_impl(context):
     context.dealer.playHand()
-    context.page = context.client.get('/players')  # do a GET /players to force BlackjackDealerService to drain the queue and update player obj
-    assert context.page.status_code == 200
+    context.runner.getScores()
     assert context.player.stats['lose'] == 1
 
 @given('"{count}" player services with URL like "{url}"')
 def step_impl(context,count,url):
-    for i in range(1,int(count)):
+    for i in range(0,int(count)):
         data = {'playerURL': url + '/' + str(i)}
         context.page = context.client.post('/players', data=json.dumps(data), content_type='application/json')
         assert context.page.status_code == 200
@@ -105,16 +109,16 @@ def step_impl(context,count):
     i = 0
     for key, value in jsonData.iteritems():
         i+=1
-    assert i == 20
+    assert i == int(count)
 
 @then('all players will have hands scored')
 def step_impl(context):
     for key, value in context.playersData.iteritems():
         assert value['win'] + value['lose'] + value['tie'] != 0
 
-@then('remove all players')
+@then('stop all players')
 def step_impl(context):
-    context.page = context.client.get('/deleteAll')
+    context.page = context.client.get('/stopAll')
     assert context.page.status_code == 200
 
 @then('the player "{url}" should have lost some hands')
@@ -128,10 +132,8 @@ def step_impl(context,url):
 
 @given('the dealer cheat url is called for player "{url}"')
 def step_impl(context,url):
-    context.page = context.client.get('/getPlayersNextCard', data=json.dumps({'playerURL':url}), content_type='application/json')
-    assert context.page.status_code == 200
-    jsonData = json.loads(context.page.data)
-    context.nextCardIndex = jsonData['cardIndex']
+    nextCard = context.runner.getNextCard(url)
+    context.nextCardIndex = nextCard.getIndex()
 
 @then('the next card will match what is expected')
 def step_impl(context):
@@ -142,3 +144,77 @@ def step_impl(context):
 def step_impl(context):
     context.dealer.playersHand = [Card(3),Card(4)]
     context.dealer.dealersHand = [Card(12),Card(12)]
+
+@given('an etcd instance is available at {endpoint}')
+def step_impl(context, endpoint):
+    endpoint = os.environ.get(endpoint)
+    assert endpoint != None
+
+    context.etcd = etcd.Client(host=endpoint.split(':')[0], port=int(endpoint.split(':')[1]))
+    try:
+        context.etcd.machines
+    except Exception as e:
+        raise e
+
+@given('dealer {uuid} is starting')
+def step_impl(context, uuid):
+    BlackjackDealerService.registerWithEtcd()
+
+@given('dealer {uuid} is stopping')
+def step_impl(context, uuid):
+    BlackjackDealerService.unregisterWithEtcd()
+
+@then('dealer {uuid} will expose itself to service discovery via {endpoint}')
+def step_impl(context, uuid, endpoint):
+    uuid = os.environ.get(uuid)
+    endpoint = os.environ.get(endpoint)
+    assert uuid != None
+    assert endpoint != None
+
+    dealer_record = context.etcd.read('/dealers/%s' % uuid).value
+    assert json.loads(dealer_record) == {
+        'endpoint': endpoint
+    }
+
+@then('dealer {uuid} will remove itself from service discovery')
+def step_impl(context, uuid):
+    uuid = os.environ.get(uuid)
+    assert uuid != None
+
+    exception = None
+    try:
+        context.etcd.get('/dealers/%s' % uuid).value
+    except Exception as e:
+        exception = e
+
+    assert exception is not None
+
+@given('player service {uuid} registers in etcd at {endpoint}')
+def step_imp(context, uuid, endpoint):
+    endpoint = endpoint.split('/', 1)
+    playerAddress = os.environ.get(endpoint[0])
+    MockPlayerService.registerWithEtcd('%s/%s' % (playerAddress, endpoint[1]))
+
+@then('dealer {uuid} will finish and score the hand for player {endpoint}')
+def step_imp(context, uuid, endpoint):
+    endpoint = endpoint.split('/', 1)
+    playerAddress = os.environ.get(endpoint[0])
+
+    context.page = context.client.get('/players')
+    assert context.page.status_code == 200
+    jsonData = json.loads(context.page.data)
+    assert jsonData['%s/%s' % (playerAddress, endpoint[1])]['lose'] != 0
+
+@given('player service {uuid} un-registers in etcd at {endpoint}')
+def step_impl(context, uuid, endpoint):
+    MockPlayerService.unregisterWithEtcd()
+
+@then('dealer {uuid} will stop the hand for the player {endpoint}')
+def step_impl(context, uuid, endpoint):
+    endpoint = endpoint.split('/', 1)
+    playerAddress = os.environ.get(endpoint[0])
+
+    context.page = context.client.get('/players')
+    assert context.page.status_code == 200
+    jsonData = json.loads(context.page.data)
+    assert jsonData['%s/%s' % (playerAddress, endpoint[1])]['status'] == 'stopped'

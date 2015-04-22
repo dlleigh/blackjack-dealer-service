@@ -3,6 +3,19 @@ reports/**
 htmlcov/**
 .coverage/**
 *.pyc
+
 .vagrant
 vagrant-setup.sh
 Vagrantfile
+
+# virtualenv
+lib/
+include/
+share/
+bin/
+pip-selfcheck.json
+man/
+.Python
+
+# environments
+environments
