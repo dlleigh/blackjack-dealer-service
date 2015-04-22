@@ -2,6 +2,7 @@ __author__ = 'dleigh'
 
 
 import requests, json, time
+import requests.exceptions
 import threading
 from Card import Card
 
@@ -24,7 +25,7 @@ class Dealer(threading.Thread):
 
     def playHand(self):
         self.playerDraw()
-        #self.dealerDraw()
+        self.dealerDraw()
         result = self.getHandResult()
         self.q.put({'playerURL': self.playerURL, 'result': result})
 
@@ -79,21 +80,32 @@ class Dealer(threading.Thread):
 
     def playerDraw(self):
         playerStand = False
-        while self.getMinHandValue(self.playersHand) <= 21 and playerStand is False:
+        playerAbort = False
+        while self.getMinHandValue(self.playersHand) <= 21 and playerStand is False and playerAbort is False:
             print ("player hand value is %s" % self.getMaxHandValue(self.playersHand))
             handData = {'playersHand': [c.getIndex() for c in self.playersHand],
                         'dealersHand': [c.getIndex() for c in self.dealersHand]}
             print("handData: %s" % handData)
-            r = requests.get(self.playerURL,
-                              data=json.dumps(handData),
-                              headers={'Content-type': 'application/json'})
-            action = r.json()['action']
-            if action == 'hit':
-                print ("player hits")
-                self.playersHand.append(Card.getRandomCard())
-            else:
-                print ("player stands")
-                playerStand = True
+            try:
+                r = requests.get(self.playerURL,
+                                  data=json.dumps(handData),
+                                  headers={'Content-type': 'application/json'},
+                                  timeout=0.5)
+                action = r.json()['action']
+                if action == 'hit':
+                    print ("player hits")
+                    self.playersHand.append(Card.getRandomCard())
+                else:
+                    print ("player stands")
+                    playerStand = True
+            except requests.exceptions.Timeout:
+                print "Player loses due to timeout"
+                playerAbort = True
+                self.playersHand = []
+            except requests.exceptions.RequestException as e:
+                print "Player loses due to RequestException %s" % e
+                playerAbort = True
+                self.playersHand = []
             print ("player hand value is now %s" % self.getMaxHandValue(self.playersHand))
 
     def cancel(self):

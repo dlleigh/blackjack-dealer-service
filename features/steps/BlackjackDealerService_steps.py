@@ -134,3 +134,12 @@ def step_impl(context):
 def step_impl(context):
     context.page = context.client.get('/deleteAll')
     assert context.page.status_code == 200
+
+@then('the player "{url}" should have lost some hands')
+def step_impl(context,url):
+    context.page = context.client.get('/players')
+    assert context.page.status_code == 200
+    jsonData = json.loads(context.page.data)
+    assert jsonData[url]['lose'] > 0
+    assert jsonData[url]['win'] == 0
+    assert jsonData[url]['tie'] == 0

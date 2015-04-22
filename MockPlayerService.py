@@ -32,5 +32,16 @@ def hit(username):
     jsonData = {"action": "hit"}
     return json.dumps(jsonData)
 
+@MockPlayerService.route("/broken/<username>", methods=['POST','GET'])
+def broken(username):
+    for cardIndex in request.json['playersHand']:
+        print("card received: %s of %s" % (Card(cardIndex).getRank(),Card(cardIndex).getSuit()))
+    # for card in request.json:
+    #     print(card.getValue())
+    #print (json.dumps(request.json))
+    jsonData = {"action": "hit"}
+    time.sleep(10)
+    return json.dumps(jsonData)
+
 if __name__ == "__main__":
     MockPlayerService.run(debug=True,port=5001)

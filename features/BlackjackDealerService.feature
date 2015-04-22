@@ -36,3 +36,10 @@ Feature: Test the Blackjack Dealer Service
         then there will be "20" players connected
         and all players will have hands scored
         then there are no active players
+
+      Scenario: broken player loses
+        Given a player service URL "http://localhost:5001/broken/one" is provided via POST to /players
+        and wait "2" seconds
+        then remove the player service URL "http://localhost:5001/broken/one"
+        then the player "http://localhost:5001/broken/one" should have lost some hands
+
