@@ -9,11 +9,15 @@ RUN apt-get -qq update && \
         dnsutils \
         git-core \
         less \
+        libffi-dev \
+        libssl-dev \
+        ncurses-dev \
+        python-dev \
         python-pip \
         wget
 
 #Python
-RUN pip install behave coverage flask requests mock ipdb
+RUN pip install behave coverage flask requests mock ipdb python-etcd
 
 # Set work dir
 

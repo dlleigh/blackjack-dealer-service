@@ -103,6 +103,6 @@ listenForPlayers(endpoint, dealerRunner)
 if __name__ == "__main__":
     registerWithEtcd()
 
-    BlackjackDealerService.run(debug=True, use_reloader=False)
+    BlackjackDealerService.run(debug=True, use_reloader=False, host='0.0.0.0')
 
     unregisterWithEtcd()

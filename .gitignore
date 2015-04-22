@@ -16,6 +16,7 @@ bin/
 pip-selfcheck.json
 man/
 .Python
+local/
 
 # environments
 environments

@@ -2,7 +2,7 @@ IMAGE_NAME=devcamp/blackjack-dealer-service
 REPO_URL=registry.swg-devops.com
 TAG=localtest
 
-test: test-unit test-integration
+test: clean test-unit test-integration
 
 test-unit:
 	@python -m unittest discover -p '*Test.py'
@@ -21,7 +21,13 @@ dockerpush:
 	@docker push $(REPO_URL)/$(IMAGE_NAME):$(TAG)
 
 clean:
-	docker -H ${DOCKER_HOST} kill ${ETCD_NAME}
-	docker -H ${DOCKER_HOST} rm ${ETCD_NAME}
+	docker -H ${DOCKER_HOST} kill ${ETCD_NAME} | true
+	docker -H ${DOCKER_HOST} rm ${ETCD_NAME} | true
+
+deploy:
+	@docker pull $(REPO_URL)/$(IMAGE_NAME):$(TAG)
+	@docker run -d -P --name blackjack-dealer-service-$(TAG) $(REPO_URL)/$(IMAGE_NAME):$(TAG)
+	@docker ps | grep blackjack-dealer-service- | grep -v blackjack-dealer-service-$(TAG) | cut -f1 -d' ' | xargs -r docker stop
+	@docker ps -f status=exited | grep blackjack-dealer-service- | cut -f1 -d' ' | xargs -r docker rm
 
 .PHONY: test test-unit test-integration dockerbuild dockerpush clean
