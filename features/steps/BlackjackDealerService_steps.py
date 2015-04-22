@@ -136,8 +136,7 @@ def step_impl(context,url):
 @then('the next card will match what is expected')
 def step_impl(context):
      context.dealer.playHand()
-     for card in context.dealer.playersHand:
-         assert card.getIndex() in [4,12,context.nextCardIndex]
+     assert context.dealer.playersHand[2].getIndex() == context.nextCardIndex
 
 @given('the player has a 2 and a 5')
 def step_impl(context):
