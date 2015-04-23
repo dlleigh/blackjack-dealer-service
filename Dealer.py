@@ -4,7 +4,12 @@ __author__ = 'dleigh'
 import requests, json, time
 import requests.exceptions
 import threading
+import logging
+import logging.config
 from Card import Card
+
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger("dealerService")
 
 class Dealer(threading.Thread):
     def __init__(self, playerURL, q):
@@ -20,14 +25,17 @@ class Dealer(threading.Thread):
     def run(self):
         while not self.cancelled:
             self.playersHand = [self.dealCard(),self.dealCard()]
+            # logging.info('Dealer dealt ' + ', '.join(map(Card.getDescription, self.playersHand)) + ' to player' + self.playerURL)
             self.dealersHand = [self.dealCard()]
             self.playHand()
             time.sleep(1)
 
     def playHand(self):
+        logging.info('Starting a round with player %s' % self.playerURL)
         self.playerDraw()
         self.dealerDraw()
         result = self.getHandResult()
+        logging.info('Round finished - result: %s, playerURL: %s' % (result, self.playerURL))
         self.q.put({'playerURL': self.playerURL, 'result': result})
 
     def getHandResult(self):

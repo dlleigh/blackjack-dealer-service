@@ -4,7 +4,10 @@ from flask import Flask, request
 from Player import Player
 from PlayerListener import PlayerListener
 from DealerRunner import DealerRunner
-import json, time, etcd, os
+import json, time, etcd, os, logging, logging.config
+
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger("dealerService")
 
 BlackjackDealerService = Flask(__name__)
 
@@ -23,6 +26,7 @@ def unregisterWithEtcd():
     try:
         # remove self from service discovery
         client.delete('/dealers/%s' % dealer_uuid)
+        logging.info('Unregistered dealer uuid %s' % dealer_uuid)
     except:
         # TODO: pass for now until we figure out why this is happening twice
         pass
