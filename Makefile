@@ -30,4 +30,7 @@ deploy:
 	@docker ps | grep blackjack-dealer-service- | grep -v blackjack-dealer-service-$(TAG) | cut -f1 -d' ' | xargs -r docker stop
 	@docker ps -f status=exited | grep blackjack-dealer-service- | cut -f1 -d' ' | xargs -r docker rm
 
-.PHONY: test test-unit test-integration dockerbuild dockerpush clean
+dependencies:
+	@sudo pip install -r requirements.txt
+
+.PHONY: test test-unit test-integration dockerbuild dockerpush clean dependencies
