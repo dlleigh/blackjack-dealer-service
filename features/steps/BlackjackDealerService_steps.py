@@ -158,11 +158,16 @@ def step_impl(context, endpoint):
 
 @given('dealer {uuid} is starting')
 def step_impl(context, uuid):
-    BlackjackDealerService.registerWithEtcd()
+    etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
+    dealer_uuid = os.environ.get('DEALER_UUID')
+    dealer_endpoint = os.environ.get('DEALER_ENDPOINT')
+    BlackjackDealerService.registerWithEtcd(etcd_endpoint, dealer_uuid, dealer_endpoint)
 
 @given('dealer {uuid} is stopping')
 def step_impl(context, uuid):
-    BlackjackDealerService.unregisterWithEtcd()
+    etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
+    dealer_uuid = os.environ.get('DEALER_UUID')
+    BlackjackDealerService.unregisterWithEtcd(etcd_endpoint,dealer_uuid)
 
 @then('dealer {uuid} will expose itself to service discovery via {endpoint}')
 def step_impl(context, uuid, endpoint):

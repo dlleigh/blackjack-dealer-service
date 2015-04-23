@@ -11,10 +11,14 @@ BlackjackDealerService = Flask(__name__)
 playerListener = None
 dealerRunner = DealerRunner()
 
-def unregisterWithEtcd():
-    etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
-    dealer_uuid = os.environ.get('DEALER_UUID')
+@BlackjackDealerService.route("/unregisterWithEtcd")
+def unregisterWithEtcdPOST():
+    jsonData = request.json
+    etcd_endpoint = jsonData['etcdEndpoint']
+    dealer_uuid = jsonData['dealerUUID']
+    return unregisterWithEtcd(etcd_endpoint,dealer_uuid)
 
+def unregisterWithEtcd(etcd_endpoint,dealer_uuid):
     assert etcd_endpoint is not None and dealer_uuid is not None
 
     # assumpe ipv4 endpoint
@@ -27,11 +31,15 @@ def unregisterWithEtcd():
         # TODO: pass for now until we figure out why this is happening twice
         pass
 
-def registerWithEtcd():
-    etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
-    dealer_uuid = os.environ.get('DEALER_UUID')
-    dealer_endpoint = os.environ.get('DEALER_ENDPOINT')
+@BlackjackDealerService.route("/registerWithEtcd")
+def registerWithEtcdPOST():
+    jsonData = request.json
+    etcd_endpoint = jsonData['etcdEndpoint']
+    dealer_uuid = jsonData['dealerUUID']
+    dealer_endpoint = jsonData['dealerEndpoint']
+    return registerWithEtcd(etcd_endpoint, dealer_uuid, dealer_endpoint)
 
+def registerWithEtcd(etcd_endpoint, dealer_uuid, dealer_endpoint):
     assert etcd_endpoint is not None and dealer_uuid is not None and dealer_endpoint is not None
 
     # assumpe ipv4 endpoint
@@ -101,7 +109,10 @@ assert endpoint is not None
 listenForPlayers(endpoint, dealerRunner)
 
 if __name__ == "__main__":
-    registerWithEtcd()
+    # etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
+    # dealer_uuid = os.environ.get('DEALER_UUID')
+    # dealer_endpoint = os.environ.get('DEALER_ENDPOINT')
+    #registerWithEtcd()
 
     BlackjackDealerService.run(debug=True, use_reloader=False, host='0.0.0.0')
 
