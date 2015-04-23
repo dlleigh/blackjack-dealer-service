@@ -1,0 +1,8 @@
+# Update based on docker host port
+export DOCKER_HOST=0.0.0.0:5555
+export DEALER_UUID=01
+export DEALER_ENDPOINT=localhost:5002
+export ETCD_ENDPOINT=0.0.0.0:2379
+export ETCD_NAME=etcd-0
+export ETCD_PORT=2379
+export PLAYER_UUID=02
