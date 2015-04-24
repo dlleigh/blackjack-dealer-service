@@ -2,9 +2,10 @@ __author__ = 'dleigh'
 
 from flask import Flask, request
 from Player import Player
-from PlayerListener import PlayerListener
+#from PlayerListener import PlayerListener
 from DealerRunner import DealerRunner
-import json, time, etcd, os, logging, logging.config
+import json, time, os, logging, logging.config
+#import etcd
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger("dealerService")
@@ -14,50 +15,50 @@ BlackjackDealerService = Flask(__name__)
 playerListener = None
 dealerRunner = DealerRunner()
 
-@BlackjackDealerService.route("/unregisterWithEtcd")
-def unregisterWithEtcdPOST():
-    jsonData = request.json
-    etcd_endpoint = jsonData['etcdEndpoint']
-    dealer_uuid = jsonData['dealerUUID']
-    return unregisterWithEtcd(etcd_endpoint,dealer_uuid)
-
-def unregisterWithEtcd(etcd_endpoint,dealer_uuid):
-    assert etcd_endpoint is not None and dealer_uuid is not None
-
-    # assumpe ipv4 endpoint
-    client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
-
-    try:
-        # remove self from service discovery
-        client.delete('/dealers/%s' % dealer_uuid)
-        logging.info('Unregistered dealer uuid %s' % dealer_uuid)
-    except:
-        # TODO: pass for now until we figure out why this is happening twice
-        pass
-
-@BlackjackDealerService.route("/registerWithEtcd")
-def registerWithEtcdPOST():
-    jsonData = request.json
-    etcd_endpoint = jsonData['etcdEndpoint']
-    dealer_uuid = jsonData['dealerUUID']
-    dealer_endpoint = jsonData['dealerEndpoint']
-    return registerWithEtcd(etcd_endpoint, dealer_uuid, dealer_endpoint)
-
-def registerWithEtcd(etcd_endpoint, dealer_uuid, dealer_endpoint):
-    assert etcd_endpoint is not None and dealer_uuid is not None and dealer_endpoint is not None
-
-    # assumpe ipv4 endpoint
-    client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
-
-    # expose self to service discovery
-    client.write(
-        '/dealers/%s' % dealer_uuid,
-        json.dumps(
-            {
-                'endpoint': dealer_endpoint
-            }
-        )
-    )
+# @BlackjackDealerService.route("/unregisterWithEtcd")
+# def unregisterWithEtcdPOST():
+#     jsonData = request.json
+#     etcd_endpoint = jsonData['etcdEndpoint']
+#     dealer_uuid = jsonData['dealerUUID']
+#     return unregisterWithEtcd(etcd_endpoint,dealer_uuid)
+#
+# def unregisterWithEtcd(etcd_endpoint,dealer_uuid):
+#     assert etcd_endpoint is not None and dealer_uuid is not None
+#
+#     # assumpe ipv4 endpoint
+#     client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
+#
+#     try:
+#         # remove self from service discovery
+#         client.delete('/dealers/%s' % dealer_uuid)
+#         logging.info('Unregistered dealer uuid %s' % dealer_uuid)
+#     except:
+#         # TODO: pass for now until we figure out why this is happening twice
+#         pass
+#
+# @BlackjackDealerService.route("/registerWithEtcd")
+# def registerWithEtcdPOST():
+#     jsonData = request.json
+#     etcd_endpoint = jsonData['etcdEndpoint']
+#     dealer_uuid = jsonData['dealerUUID']
+#     dealer_endpoint = jsonData['dealerEndpoint']
+#     return registerWithEtcd(etcd_endpoint, dealer_uuid, dealer_endpoint)
+#
+# def registerWithEtcd(etcd_endpoint, dealer_uuid, dealer_endpoint):
+#     assert etcd_endpoint is not None and dealer_uuid is not None and dealer_endpoint is not None
+#
+#     # assumpe ipv4 endpoint
+#     client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
+#
+#     # expose self to service discovery
+#     client.write(
+#         '/dealers/%s' % dealer_uuid,
+#         json.dumps(
+#             {
+#                 'endpoint': dealer_endpoint
+#             }
+#         )
+#     )
 
 def listenForPlayers(endpoint, runner):
     playerListener = PlayerListener(endpoint, runner)
@@ -108,9 +109,9 @@ def cheat():
     return json.dumps(result)
 
 # Etcd Player Discovery
-endpoint = os.environ.get('ETCD_ENDPOINT')
-assert endpoint is not None
-listenForPlayers(endpoint, dealerRunner)
+# endpoint = os.environ.get('ETCD_ENDPOINT')
+# assert endpoint is not None
+# listenForPlayers(endpoint, dealerRunner)
 
 if __name__ == "__main__":
     # etcd_endpoint = os.environ.get('ETCD_ENDPOINT')

@@ -1,7 +1,8 @@
 __author__ = 'dleigh'
 
 from behave import *
-import json, os, etcd
+import json, os
+# import etcd
 import requests, requests_mock
 import time
 import BlackjackDealerService

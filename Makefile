@@ -9,13 +9,13 @@ test-unit:
 	@python -m unittest discover -p '*Test.py'
 
 test-integration:
-	docker -H ${DOCKER_HOST} run --name ${ETCD_NAME} -d -p 8001:8001 -p ${ETCD_PORT}:${ETCD_PORT} quay.io/coreos/etcd:v0.4.6 -peer-addr 127.0.0.1:8001 -addr 127.0.0.1:2379
-	behave #--no-capture -D BEHAVE_DEBUG_ON_ERROR --tags=-etcd
-	docker -H ${DOCKER_HOST} kill ${ETCD_NAME}
-	docker -H ${DOCKER_HOST} rm ${ETCD_NAME}
+	@ #docker -H ${DOCKER_HOST} run --name ${ETCD_NAME} -d -p 8001:8001 -p ${ETCD_PORT}:${ETCD_PORT} quay.io/coreos/etcd:v0.4.6 -peer-addr 127.0.0.1:8001 -addr 127.0.0.1:2379
+	behave --no-capture --tags=-etcd
+	@ #docker -H ${DOCKER_HOST} kill ${ETCD_NAME}
+	@ #docker -H ${DOCKER_HOST} rm ${ETCD_NAME}
 
 test-smoke:
-	@ # Make it fails ealier
+	@ # Make it fails earlier
 	@docker inspect -f '{{range $$p, $$conf := .NetworkSettings.Ports}}{{$$p}}={{(index $$conf 0).HostPort}} {{end}}' blackjack-dealer-service-$(TAG) > /tmp/dealer_port
 	@curl http://$(DEALER_HOSTNAME):`cat /tmp/dealer_port | grep '5000/' | cut -d= -f2`
 
@@ -27,8 +27,8 @@ dockerpush:
 	@docker push $(REPO_URL)/$(IMAGE_NAME):$(TAG)
 
 clean:
-	docker -H ${DOCKER_HOST} kill ${ETCD_NAME} | true
-	docker -H ${DOCKER_HOST} rm ${ETCD_NAME} | true
+	@ #docker -H ${DOCKER_HOST} kill ${ETCD_NAME} | true
+	@ #docker -H ${DOCKER_HOST} rm ${ETCD_NAME} | true
 
 deploy:
 	@docker pull $(REPO_URL)/$(IMAGE_NAME):$(TAG)

@@ -2,7 +2,8 @@ __author__ = 'dleigh'
 
 from flask import Flask, request
 from Queue import Queue
-import json, time, os, etcd
+import json, time, os
+# import etcd
 from Card import Card
 
 import logging
@@ -16,40 +17,40 @@ MockPlayerService = Flask(__name__)
 players = {}
 q = Queue()
 
-def registerWithEtcd(playerURL):
-    etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
-    player_uuid = os.environ.get('PLAYER_UUID')
-
-    assert etcd_endpoint is not None and player_uuid is not None
-
-    # assumpe ipv4 endpoint
-    client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
-
-    # expose self to service discovery
-    client.write(
-        '/players/%s' % player_uuid,
-        json.dumps(
-            {
-                'endpoint': playerURL
-            }
-        )
-    )
-
-def unregisterWithEtcd():
-    etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
-    player_uuid = os.environ.get('PLAYER_UUID')
-
-    assert etcd_endpoint is not None and player_uuid is not None
-
-    # assumpe ipv4 endpoint
-    client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
-
-    try:
-        # remove self from service discovery
-        client.delete('/players/%s' % player_uuid)
-    except:
-        # TODO: pass for now until we figure out why this is happening twice
-        pass
+# def registerWithEtcd(playerURL):
+#     etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
+#     player_uuid = os.environ.get('PLAYER_UUID')
+#
+#     assert etcd_endpoint is not None and player_uuid is not None
+#
+#     # assumpe ipv4 endpoint
+#     client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
+#
+#     # expose self to service discovery
+#     client.write(
+#         '/players/%s' % player_uuid,
+#         json.dumps(
+#             {
+#                 'endpoint': playerURL
+#             }
+#         )
+#     )
+#
+# def unregisterWithEtcd():
+#     etcd_endpoint = os.environ.get('ETCD_ENDPOINT')
+#     player_uuid = os.environ.get('PLAYER_UUID')
+#
+#     assert etcd_endpoint is not None and player_uuid is not None
+#
+#     # assumpe ipv4 endpoint
+#     client = etcd.Client(host=etcd_endpoint.split(':')[0], port=int(etcd_endpoint.split(':')[1]))
+#
+#     try:
+#         # remove self from service discovery
+#         client.delete('/players/%s' % player_uuid)
+#     except:
+#         # TODO: pass for now until we figure out why this is happening twice
+#         pass
 
 @MockPlayerService.route("/")
 def hello():
