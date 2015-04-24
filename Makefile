@@ -32,6 +32,8 @@ clean:
 
 deploy:
 	@docker pull $(REPO_URL)/$(IMAGE_NAME):$(TAG)
+	@docker stop blackjack-dealer-service-$(TAG) | true
+	@docker rm blackjack-dealer-service-$(TAG) | true
 	@docker run -d -P -e ETCD_ENDPOINT=$(ETCD_ENDPOINT) --name blackjack-dealer-service-$(TAG) $(REPO_URL)/$(IMAGE_NAME):$(TAG)
 	@docker ps | grep blackjack-dealer-service- | grep -v blackjack-dealer-service-$(TAG) | cut -f1 -d' ' | xargs -r docker stop
 	@docker ps -f status=exited | grep blackjack-dealer-service- | cut -f1 -d' ' | xargs -r docker rm
