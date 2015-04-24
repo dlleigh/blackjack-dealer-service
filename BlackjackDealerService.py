@@ -116,4 +116,4 @@ if __name__ == "__main__":
 
     BlackjackDealerService.run(debug=True, use_reloader=False, host='0.0.0.0')
 
-    unregisterWithEtcd()
+    # unregisterWithEtcd()

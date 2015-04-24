@@ -1,5 +1,6 @@
 IMAGE_NAME=devcamp/blackjack-dealer-service
 REPO_URL=registry.swg-devops.com
+ETCD_ENDPOINT=0.0.0.0:2379
 TAG=localtest
 
 test: clean test-unit test-integration
@@ -26,7 +27,7 @@ clean:
 
 deploy:
 	@docker pull $(REPO_URL)/$(IMAGE_NAME):$(TAG)
-	@docker run -d -P --name blackjack-dealer-service-$(TAG) $(REPO_URL)/$(IMAGE_NAME):$(TAG)
+	@docker run -d -P -e ETCD_ENDPOINT=$(ETCD_ENDPOINT) --name blackjack-dealer-service-$(TAG) $(REPO_URL)/$(IMAGE_NAME):$(TAG)
 	@docker ps | grep blackjack-dealer-service- | grep -v blackjack-dealer-service-$(TAG) | cut -f1 -d' ' | xargs -r docker stop
 	@docker ps -f status=exited | grep blackjack-dealer-service- | cut -f1 -d' ' | xargs -r docker rm
 
