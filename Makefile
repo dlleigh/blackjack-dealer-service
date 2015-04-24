@@ -1,7 +1,7 @@
-IMAGE_NAME=devcamp/blackjack-dealer-service
-REPO_URL=registry.swg-devops.com
-ETCD_ENDPOINT=0.0.0.0:2379
-TAG=localtest
+IMAGE_NAME?=devcamp/blackjack-dealer-service
+REPO_URL?=registry.swg-devops.com
+TAG?=localtest
+DEALER_HOSTNAME?=localhost
 
 test: clean test-unit test-integration
 
@@ -13,6 +13,11 @@ test-integration:
 	behave #--no-capture -D BEHAVE_DEBUG_ON_ERROR --tags=-etcd
 	docker -H ${DOCKER_HOST} kill ${ETCD_NAME}
 	docker -H ${DOCKER_HOST} rm ${ETCD_NAME}
+
+test-smoke:
+	@ # Make it fails ealier
+	@docker inspect -f '{{range $$p, $$conf := .NetworkSettings.Ports}}{{$$p}}={{(index $$conf 0).HostPort}} {{end}}' blackjack-dealer-service-$(TAG) > /tmp/dealer_port
+	@curl http://$(DEALER_HOSTNAME):`cat /tmp/dealer_port | grep '5000/' | cut -d= -f2`
 
 dockerbuild:
 	@docker build -t $(IMAGE_NAME):$(TAG) .
