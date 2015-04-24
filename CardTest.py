@@ -22,5 +22,11 @@ class TestCard(unittest.TestCase):
         card = Card.getRandomCard()
         self.assertIsInstance(card,Card)
 
+    def test_getDescription(self):
+        card = Card(10)
+        self.assertEqual(card.getDescription(), 'Jack of clubs')
+        card = Card(17)
+        self.assertEqual(card.getDescription(), '5 of diamonds')
+
 if __name__ == '__main__':
     unittest.main()

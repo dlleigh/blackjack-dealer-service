@@ -1,5 +1,10 @@
 from Queue import Queue
 from Dealer import Dealer
+import logging
+import logging.config
+
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger("dealerService")
 
 class DealerRunner():
   def __init__(self):
@@ -45,20 +50,24 @@ class DealerRunner():
     return Dealer(playerURL, self.q)
 
   def startPlayer(self, playerURL):
+    logging.info('Starting player %s' % playerURL)
     dealer = self.newDealer(playerURL)
     self.players[playerURL].set_dealer(dealer)
     dealer.start()
 
   def stopPlayer(self, playerURL):
+    logging.info('Stopping player %s' % playerURL)
     self.players[playerURL].status = 'stopped'
     self.players[playerURL].dealer.cancel()
 
   def stopAllPlayers(self):
+    logging.info('Stopping all players')
     for _, player in self.players.iteritems():
       player.status = 'stopped'
       player.dealer.cancel()
 
   def removeAllPlayers(self):
+    logging.info('Removing all players')
     self.flushQueue()
     self.stopAllPlayers()
     self.players = {}

@@ -79,6 +79,9 @@ class Card:
             if self.getSuit() == deck[i]['suit'] and self.getRank() == deck[i]['rank']:
                 return i
 
+    def getDescription(self):
+        return self.deck[self.cardNumber]['rank'] + ' of ' + self.deck[self.cardNumber]['suit']
+
     @classmethod
     def getRandomCard(self):
         return Card(randint(0, 51))

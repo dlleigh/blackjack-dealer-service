@@ -14,7 +14,7 @@ def before_all(context):
     import ipdb
     # ipdb.set_trace()
     # run mock player service
-    context.mockProcess = Popen('/usr/bin/python MockPlayerService.py',shell=True)
+    context.mockProcess = Popen('python MockPlayerService.py',shell=True)
     print("MockProcess pid: %s" % context.mockProcess.pid)
     time.sleep(float(5))  # maybe later we poll to see if the MockPlayerService is started
 
