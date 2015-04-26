@@ -57,8 +57,12 @@ class DealerRunner():
 
   def stopPlayer(self, playerURL):
     logging.info('Stopping player %s' % playerURL)
-    self.players[playerURL].status = 'stopped'
-    self.players[playerURL].dealer.cancel()
+    if playerURL in self.players:
+        self.players[playerURL].status = 'stopped'
+        self.players[playerURL].dealer.cancel()
+        return "ok"
+    else:
+        return ("player %s not found" % playerURL,412)
 
   def stopAllPlayers(self):
     logging.info('Stopping all players')
@@ -71,3 +75,4 @@ class DealerRunner():
     self.flushQueue()
     self.stopAllPlayers()
     self.players = {}
+

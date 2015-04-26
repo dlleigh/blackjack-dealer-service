@@ -224,3 +224,21 @@ def step_impl(context, uuid, endpoint):
     assert context.page.status_code == 200
     jsonData = json.loads(context.page.data)
     assert jsonData['%s/%s' % (playerAddress, endpoint[1])]['status'] == 'stopped'
+
+@given('attempt to remove a player that does not exist in the dealer')
+def step_impl(context):
+    data = {'playerURL': "http://does_not_exist"}
+    context.page = context.client.delete('/players', data=json.dumps(data), content_type='application/json')
+    assert context.page.status_code == 412
+
+@given('reset dealer')
+def step_impl(context):
+    context.page = context.client.get('/deleteAll')
+    assert context.page.status_code == 200
+
+@then('all player history will be removed')
+def step_impl(context):
+    context.page = context.client.get('/players')
+    assert context.page.status_code == 200
+    jsonData = json.loads(context.page.data)
+    assert jsonData == {}

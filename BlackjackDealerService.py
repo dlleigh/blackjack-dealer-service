@@ -60,9 +60,9 @@ dealerRunner = DealerRunner()
 #         )
 #     )
 
-def listenForPlayers(endpoint, runner):
-    playerListener = PlayerListener(endpoint, runner)
-    playerListener.start()
+# def listenForPlayers(endpoint, runner):
+#     playerListener = PlayerListener(endpoint, runner)
+#     playerListener.start()
 
 @BlackjackDealerService.route("/")
 def hello():
@@ -87,8 +87,7 @@ def playersRequest():
     elif request.method == 'DELETE':
         jsonData = request.json
         playerURL = jsonData['playerURL']
-        dealerRunner.stopPlayer(playerURL)
-        return "ok"
+        return dealerRunner.stopPlayer(playerURL)
 
 @BlackjackDealerService.route("/deleteAll")
 def deleteAll():

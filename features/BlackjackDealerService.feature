@@ -23,13 +23,16 @@ Feature: Test the Blackjack Dealer Service
         then the player service URL "http://localhost:5002/stand/one" is active on GET /players
         then remove the player service URL "http://localhost:5002/stand/one"
         then there are no active players
+        given reset dealer
+        then all player history will be removed
+
 
     Scenario: attempt to add the same player service twice
       Given a player service URL "http://localhost:5002/stand/one" is provided via POST to /players
         then another player service URL "http://localhost:5002/stand/one" provided via POST to /players will be rejected
         then remove the player service URL "http://localhost:5002/stand/one"
         then there are no active players
-
+@longrun
    Scenario: start many player services
       Given "10" player services with URL like "http://localhost:5002/hit"
         and "10" player services with URL like "http://localhost:5002/stand"
@@ -85,3 +88,6 @@ Feature: Test the Blackjack Dealer Service
         and wait "2" seconds
         then remove the player service URL "http://localhost:5002/broken/one"
         then the player "http://localhost:5002/broken/one" should have lost some hands
+
+    Scenario: remove player that does not exist
+      Given attempt to remove a player that does not exist in the dealer
