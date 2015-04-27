@@ -14,7 +14,7 @@ class TestCard(unittest.TestCase):
 
     def test_getValue(self):
         card = Card(0)
-        self.assertEqual(card.getValue(),[1,10])
+        self.assertEqual(card.getValue(),[1, 11])
         card = Card(44)
         self.assertEqual(card.getValue(),6)
 

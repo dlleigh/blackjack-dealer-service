@@ -39,6 +39,6 @@ deploy:
 	@docker ps -f status=exited | grep blackjack-dealer-service- | cut -f1 -d' ' | xargs -r docker rm
 
 dependencies:
-	@sudo pip install -r requirements.txt
+	@ #sudo pip install -r requirements.txt
 
 .PHONY: test test-unit test-integration dockerbuild dockerpush clean dependencies

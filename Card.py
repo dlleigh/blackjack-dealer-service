@@ -3,7 +3,7 @@ __author__ = 'dleigh'
 from random import randint
 
 deck = [
-        { 'suit': 'clubs', 'rank': 'Ace', 'value': [ 1, 10 ] },
+        { 'suit': 'clubs', 'rank': 'Ace', 'value': [ 1, 11 ] },
         { 'suit': 'clubs', 'rank': '2', 'value': 2 },
         { 'suit': 'clubs', 'rank': '3', 'value': 3 },
         { 'suit': 'clubs', 'rank': '4', 'value': 4 },
@@ -17,7 +17,7 @@ deck = [
         { 'suit': 'clubs', 'rank': 'Queen', 'value': 10 },
         { 'suit': 'clubs', 'rank': 'King', 'value': 10 },
 
-        { 'suit': 'diamonds', 'rank': 'Ace', 'value': [ 1, 10 ] },
+        { 'suit': 'diamonds', 'rank': 'Ace', 'value': [ 1, 11 ] },
         { 'suit': 'diamonds', 'rank': '2', 'value': 2 },
         { 'suit': 'diamonds', 'rank': '3', 'value': 3 },
         { 'suit': 'diamonds', 'rank': '4', 'value': 4 },
@@ -31,7 +31,7 @@ deck = [
         { 'suit': 'diamonds', 'rank': 'Queen', 'value': 10 },
         { 'suit': 'diamonds', 'rank': 'King', 'value': 10 },
 
-        { 'suit': 'hearts', 'rank': 'Ace', 'value': [ 1, 10 ] },
+        { 'suit': 'hearts', 'rank': 'Ace', 'value': [ 1, 11 ] },
         { 'suit': 'hearts', 'rank': '2', 'value': 2 },
         { 'suit': 'hearts', 'rank': '3', 'value': 3 },
         { 'suit': 'hearts', 'rank': '4', 'value': 4 },
@@ -45,7 +45,7 @@ deck = [
         { 'suit': 'hearts', 'rank': 'Queen', 'value': 10 },
         { 'suit': 'hearts', 'rank': 'King', 'value': 10 },
 
-        { 'suit': 'spades', 'rank': 'Ace', 'value': [ 1, 10 ] },
+        { 'suit': 'spades', 'rank': 'Ace', 'value': [ 1, 11 ] },
         { 'suit': 'spades', 'rank': '2', 'value': 2 },
         { 'suit': 'spades', 'rank': '3', 'value': 3 },
         { 'suit': 'spades', 'rank': '4', 'value': 4 },
