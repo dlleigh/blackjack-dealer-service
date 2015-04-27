@@ -6,13 +6,19 @@ DEALER_HOSTNAME?=localhost
 test: clean test-unit test-integration
 
 test-unit:
-	@python -m unittest discover -p '*Test.py'
+	coverage run -a -m unittest discover -p '*Test.py'
 
 test-integration:
 	@ #docker -H ${DOCKER_HOST} run --name ${ETCD_NAME} -d -p 8001:8001 -p ${ETCD_PORT}:${ETCD_PORT} quay.io/coreos/etcd:v0.4.6 -peer-addr 127.0.0.1:8001 -addr 127.0.0.1:2379
-	behave --no-capture --tags=-etcd
+	coverage run -a --source='.' -m behave --no-capture --tags=-etcd
 	@ #docker -H ${DOCKER_HOST} kill ${ETCD_NAME}
 	@ #docker -H ${DOCKER_HOST} rm ${ETCD_NAME}
+
+cov:
+	coverage report -m --omit=*/site-packages/*,*/dist-packages/*,*Test.py
+
+cov-html:
+	coverage html --omit=*/site-packages/*,*/dist-packages/*,*Test.py
 
 test-smoke:
 	@ # Make it fails earlier
@@ -29,6 +35,8 @@ dockerpush:
 clean:
 	@ #docker -H ${DOCKER_HOST} kill ${ETCD_NAME} | true
 	@ #docker -H ${DOCKER_HOST} rm ${ETCD_NAME} | true
+	coverage erase
+	rm -rf htmlcov
 
 deploy:
 	@docker pull $(REPO_URL)/$(IMAGE_NAME):$(TAG)
@@ -41,4 +49,4 @@ deploy:
 dependencies:
 	@ #sudo pip install -r requirements.txt
 
-.PHONY: test test-unit test-integration dockerbuild dockerpush clean dependencies
+.PHONY: test test-unit test-integration dockerbuild dockerpush clean dependencies cov cov-html

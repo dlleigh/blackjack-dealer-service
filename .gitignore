@@ -1,6 +1,7 @@
 .idea/**
 reports/**
 htmlcov/**
+.coverage
 .coverage/**
 *.pyc
 

@@ -31,16 +31,31 @@ $ export ETCD_PORT=2379
 
 #### All
 ```
-make tests
+make test
 ```
 
 #### Unit
 ```
-make tests-unit
+make test-unit
 ```
 
 #### Integration
 **NOTE**: integration `make` steps depend on `docker` cli to manage containers of various service dependencies (i.e. `etcd`)
 ```
-make tests-integration
+make test-integration
+```
+
+#### Coverage
+```shell
+# coverage for TDD
+make clean test-unit cov
+
+# coverage for BDD
+make clean test-integration cov
+
+# combined coverage
+make test cov
+
+# HTML based coverage
+make test cov-html
 ```
