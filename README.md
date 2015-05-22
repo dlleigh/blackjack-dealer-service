@@ -14,6 +14,7 @@ $ export DEALER_UUID=...
 $ export DEALER_ENDPOINT=...
 ```
 
+
 #### Run it
 ```
 $ python BlackJackDealerService.py
