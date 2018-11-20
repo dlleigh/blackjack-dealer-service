@@ -16,7 +16,7 @@ parse-type==0.3.4
 pyasn1==0.1.7
 pycparser==2.12
 PyYAML==3.11
-requests==2.6.0
+requests>=2.20.0
 requests-mock==0.6.0
 scales==1.0.9
 six==1.9.0
